@@ -1,13 +1,14 @@
 import { useState } from "react";
 import Counter from "./Counter";
 import Product from "./Product";
+import { v4 as uuid } from "uuid";
 
 function Products() {
-  
-
-  const [title, setTitle]= useState("")
-  const [price, setPrice]= useState("")
   let showList = true;
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [message, setMessage] = useState("");
+
   let [products, setProducts] = useState([
     {
       id: 1,
@@ -21,6 +22,32 @@ function Products() {
     },
   ]);
 
+  const titleInput = (e) => {
+    // console.log("title Changed");
+    if (e.target.value === "") {
+      setMessage("Title is required");
+    } else if (e.target.value.trim().length < 3) {
+      setMessage("Please tape more than 3 characters");
+    } else {
+      setMessage("");
+      setTitle(e.target.value);
+    }
+  };
+  const priceInput = (e) => {
+    setPrice(e.target.value);
+  };
+  const submitForm = (e) => {
+    e.preventDefault();
+    // console.log(title, price);
+    let myProduct = {
+      id: uuid(),
+      label: title,
+      price,
+    };
+    setProducts([...products, myProduct]);
+    setTitle("");
+    setPrice(0);
+  };
   const deleteProduct = (id) => {
     let myList = products.filter((product) => product.id !== id);
 
@@ -40,19 +67,40 @@ function Products() {
         qui repudiandae. In quisquam numquam, deleniti dolore pariatur itaque
         deserunt officiis.
       </p>
-      <form>
-        <div className="form-group my-2">
-          <label htmlFor="" className="form-label">Title</label>
-          <input onChange={} type="text" className="form-control" />
-        </div>
 
-        <div className="form-group my-2">
-          <label htmlFor="" className="form-label">Price</label>
-          <input onChange={} type="number" className="form-control" />
-        </div>
+      <div className="card bg-light">
+        <form onSubmit={submitForm}>
+          <div className="form-group my-2">
+            <label htmlFor="" className="form-label">
+              Title
+            </label>
+            <input
+              defaultValue={title}
+              onChange={titleInput}
+              type="text"
+              className="form-control"
+            />
+            {message && <div className="alert alert-danger">{message}</div>}
+          </div>
 
-        <button className="btn btn-success my-2 mb-2">Save</button>
-      </form>
+          <div className="form-group my-2">
+            <label htmlFor="" className="form-label">
+              Price
+            </label>
+            <input
+              defaultValue={price}
+              onChange={priceInput}
+              type="number"
+              className="form-control"
+            />
+          </div>
+
+          <button className="btn btn-success my-2 mb-2">Save</button>
+        </form>
+
+        {title}
+        {price}
+      </div>
 
       {showList && (
         <div>
@@ -63,6 +111,7 @@ function Products() {
                   <h4 className="card-title"> {product.label} </h4>
                   <p className="card-text">
                     <button className="btn btn-success">{product.price}</button>
+                    
                   </p>
                 </div>
               </Product>
